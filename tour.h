@@ -30,7 +30,7 @@ private:
     void copy(const Tour &other);
     void nukem();
     void update_pos();
-    bool on_board(int x, int y);
+    bool on_board(int x, int y);    //check both that given points are on board and have not been visited yet
 };
 
 
