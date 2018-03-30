@@ -3,7 +3,7 @@
 using namespace std;
 
 int main() {
-    Tour test1(4, 4);
+    Tour test1(7, 0);
 
     for(int i = 0; i < 63; ++i){
         test1.q_enqueue(test1.search(test1.possibles()));

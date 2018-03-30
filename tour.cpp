@@ -74,6 +74,7 @@ Tour::Tour(int x, int y) {
     _position = &_board[x][y];
     *_position = 0;
     int* temp = _position;
+    std::cout << "initial position: " << _x << " , " << _y << std::endl;
     _path.enqueue(temp);
 }
 Tour::~Tour() {
