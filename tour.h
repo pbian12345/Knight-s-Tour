@@ -9,7 +9,7 @@
 #include <vector>
 class Tour {
 public:
-    Tour(int x = 4, int y = 4);
+    explicit Tour(int x = 8, int y = 1);
     ~Tour();
     Tour(const Tour &other);
     Tour&operator=(const Tour &other);
