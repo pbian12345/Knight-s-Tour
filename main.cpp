@@ -1,16 +1,12 @@
 #include <iostream>
-#include "tour.h"
+#include "test_fcns.h"
 using namespace std;
 
 int main() {
-    Tour test1(4, 4);
-
-    for(int i = 0; i < 63; ++i){
-        test1.q_enqueue(test1.search(test1.possibles()));
-    }
-    for(int i = 0; i < 63; ++i){
-        cout << "iteration #" << i + 1 << endl;
-        test1.q_print();
-    }
+    cout << test_ctor() << endl;
+    cout << test_size() << endl;
+    cout << test_pop() << endl;
+    cout << test_clear() << endl;
+    cout << test_peek() << endl;
     return 0;
 }
