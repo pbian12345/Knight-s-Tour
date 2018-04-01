@@ -6,6 +6,8 @@
 #include <cmath>
 #include <iostream>
 
+// Overloaded constructor
+// Takes in two coordinates
 Tour::Tour(int x, int y) {
     //these rows will be repeated
         //they're the contents of an 8x8 board in terms of possible moves
@@ -74,9 +76,70 @@ Tour::Tour(int x, int y) {
     _position = &_board[x][y];
     *_position = 0;
     int* temp = _position;
-    std::cout << "initial position: " << _x << " , " << _y << std::endl;
     _path.enqueue(temp);
 }
+
+void Tour::printBoard(){
+    // Print function in board format
+    for(int i = 0; i < 8; ++i){
+        std::cout << " " << std::endl;
+        switch (i){
+            case 0:{
+                for(int j = 0; j < 8; ++j){
+                    std::cout <<_board[i][j];
+                }
+                break;
+            }
+            case 1:{
+                for(int j = 0; j < 8; ++j){
+                    std::cout <<_board[i][j];
+                }
+                break;
+            }
+            case 2:{
+                for(int j = 0; j < 8; ++j){
+                    std::cout <<_board[i][j];
+                }
+                break;
+            }
+            case 3:{
+                for(int j = 0; j < 8; ++j){
+                    std::cout <<_board[i][j];
+                }
+                break;
+            }
+            case 4:{
+                for(int j = 0; j < 8; ++j){
+                    std::cout <<_board[i][j];
+                }
+                break;
+            }
+            case 5:{
+                for(int j = 0; j < 8; ++j){
+                    std::cout <<_board[i][j];
+                }
+                break;
+            }
+            case 6:{
+                for(int j = 0; j < 8; ++j){
+                    std::cout <<_board[i][j];
+                }
+                break;
+            }
+            case 7:{
+                for(int j = 0; j < 8; ++j){
+                    std::cout <<_board[i][j];
+                }
+                break;
+            }
+            default:
+                break;
+        }
+    }
+    std::cout << std::endl << std::endl;
+
+}
+
 Tour::~Tour() {
     nukem();
 }
@@ -95,68 +158,99 @@ std::vector<int*> Tour::possibles() {
 
     //don't forget to check to make sure there are no null pointers
     //(pointers to positions that are not on board)
+
+    // Creates vector of int pointers to coordinates
     std::vector<int*> pos_coord;
     int* temp = NULL;
+
+
+
+
+    // First CCW movement
+    if(on_board(_x - 2, _y - 1)){
+        temp = &_board[_x - 2][_y - 1];
+        --(*temp);
+        pos_coord.push_back(temp);
+    }
+    // 2nd CCW movement
     if(on_board(_x - 1, _y - 2)){
         temp = &_board[_x - 1][_y - 2];
         --(*temp);
         pos_coord.push_back(temp);
     }
-    else if(on_board(_x - 2, _y - 1)){
-        temp = &_board[_x - 2][_y - 1];
-        --(*temp);
-        pos_coord.push_back(temp);
-    }
-    else if(on_board(_x - 2, _y + 1)){
-        temp = &_board[_x - 2][_y + 1];
-        --(*temp);
-        pos_coord.push_back(temp);
-    }
-    else if(on_board(_x - 1, _y + 2)){
-        temp = &_board[_x - 1][_y + 2];
-        --(*temp);
-        pos_coord.push_back(temp);
-    }
-    else if(on_board(_x + 1, _y + 2)){
-        temp = &_board[_x + 1][_y + 2];
-        --(*temp);
-        pos_coord.push_back(temp);
-    }
-    else if(on_board(_x + 2, _y + 1)){
-        temp = &_board[_x + 2][_y + 1];
-        --(*temp);
-        pos_coord.push_back(temp);
-    }
-    else if(on_board(_x + 2, _y - 1)){
-        temp = &_board[_x + 2][_y - 1];
-        --(*temp);
-        pos_coord.push_back(temp);
-    }
-    else if(on_board(_x + 1, _y - 2)){
+    // 3rd CCW movement
+    if(on_board(_x + 1, _y - 2)){
         temp = &_board[_x + 1][_y - 2];
         --(*temp);
         pos_coord.push_back(temp);
     }
+    // 4th CCW movement
+    if(on_board(_x + 2, _y - 1)){
+        temp = &_board[_x + 2][_y - 1];
+         --(*temp);
+
+        pos_coord.push_back(temp);
+    }
+    // 5th CCW movement
+    if(on_board(_x + 2, _y + 1)){
+        temp = &_board[_x + 2][_y + 1];
+         --(*temp);
+        pos_coord.push_back(temp);
+    }
+    // 6th CCW movement
+    if(on_board(_x + 1, _y + 2)){
+        temp = &_board[_x + 1][_y + 2];
+         --(*temp);
+        pos_coord.push_back(temp);
+    }
+    // 7th CCW movement
+    if(on_board(_x - 1, _y + 2)){
+        temp = &_board[_x - 1][_y + 2];
+         --(*temp);
+        pos_coord.push_back(temp);
+    }
+    // 8th CCW movement
+    if(on_board(_x - 2, _y + 1)){
+        temp = &_board[_x - 2][_y + 1];
+         --(*temp);
+        pos_coord.push_back(temp);
+    }
     return pos_coord;
 }
+// Returns current x position
+int Tour::getXPosition() {
+   int temp = _x;
+   return temp;
+}
+// Returns current y position
+int Tour::getYPosition(){
+    int temp = _y;
+    return temp;
+}
+
 int* Tour::search(std::vector<int*> poses) {
     //decide which possible move will be used (pushed into queue)
 
 
     //now check for smallest as in Warnsdorff's rule
-        //as tie-breaker, counter-clockwise
+     //as tie-breaker, counter-clockwise
     int count = 8;
     std::vector<int*>::iterator it = poses.begin();
     while(it != poses.end()){
-        if(**it <= count){
+        int temp_num = *(*it);
+        if(temp_num <= count){
             count = **it;
             _position = *it;
         }
         ++it;
     }
+    // Updates position of x & y coordinates if they match a valid position on the board
     update_pos();
+    // Deferences pointer to space on board in order to set value = 0
     *_position = 0;
+    // Creates an integer pointer to the position on the board
     int* temp = _position;
+    // Returns that position
     return temp;
 }
 
@@ -183,6 +277,7 @@ void Tour::nukem() {
     delete _position;
     _path.clear();
 }
+// Updates new position on board
 void Tour::update_pos() {
     for(int i = 0; i < 8; ++i){
         for(int j = 0; j < 8; ++j){
@@ -193,15 +288,18 @@ void Tour::update_pos() {
         }
     }
 }
+// Checks to see if coordinates are on board
 bool Tour::on_board(int x, int y) {
     if(x < 0 || y < 0){
         return false;
     }
-    else if(x > 8 || y > 8){
+    else if(x >= 8 || y >= 8){
         return false;
     }
         //also check to see if value is 0
             //meaning you can't go there
+
+        // May be dereferencing a null pointer?
     else if(_board[x][y] == 0){
         return false;
     }
@@ -209,15 +307,21 @@ bool Tour::on_board(int x, int y) {
 }
 void Tour::q_print() {
     int x, y;
+    // Print function in Algebraic Notation
+
+    // Int pointer or array takes in the head of the queue
     int* temp = q_dequeue();
     for(int a = 0; a < 8; ++a){
         for(int b = 0; b < 8; ++b){
+            // If the int pointer is equal to the position of the board
             if(temp == &_board[a][b]){
+                // x & y is assigned to those specific coordinates from the 2D board array
                 x = a;
                 y = b;
             }
+
+            }
         }
-    }
     switch (x){
         case 0:{
             std::cout << "QR" << 9 - (y + 1) << std::endl;

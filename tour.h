@@ -7,9 +7,11 @@
 
 #include "queue.h"
 #include <vector>
+#include <string>
+
 class Tour {
 public:
-    explicit Tour(int x, int y);
+    Tour(int x = 4, int y = 4);
     ~Tour();
     Tour(const Tour &other);
     Tour&operator=(const Tour &other);
@@ -20,8 +22,14 @@ public:
     void q_enqueue(int* input);
     int* q_dequeue();
 
+    int getXPosition();
+    int getYPosition();
+
+    void printBoard();
+
     void q_print();
 private:
+    // 2D array of type int
     int** _board;
     myqueue::myQueue<int*> _path;
     int _x, _y;
@@ -30,7 +38,7 @@ private:
     void copy(const Tour &other);
     void nukem();
     void update_pos();
-    bool on_board(int x, int y);    //check both that given points are on board and have not been visited yet
+    bool on_board(int x, int y);
 };
 
 
