@@ -118,12 +118,22 @@ namespace myqueue
     template<typename T>
     T myQueue<T>::dequeue()
     {
+        // If queue is empty, throw empty
         if(empty())
             throw QUEUE_EMPTY;
+
+        // Point to head of queue
         node<T> *ptr = head;
+
+        // Point to data within head of queue
         T data = head->data;
+
+        // Point to the next node after head and make it the new head
         head = head->next;
+
+        // Delete head
         delete ptr;
+        // Decrement size
         --mySize;
         return data;
     }
