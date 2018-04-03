@@ -86,57 +86,8 @@ void Tour::printBoard(){
     // Print function in board format
     for(int i = 0; i < 8; ++i){
         std::cout << " " << std::endl;
-        switch (i){
-            case 0:{
-                for(int j = 0; j < 8; ++j){
-                    std::cout <<_board[i][j];
-                }
-                break;
-            }
-            case 1:{
-                for(int j = 0; j < 8; ++j){
-                    std::cout <<_board[i][j];
-                }
-                break;
-            }
-            case 2:{
-                for(int j = 0; j < 8; ++j){
-                    std::cout <<_board[i][j];
-                }
-                break;
-            }
-            case 3:{
-                for(int j = 0; j < 8; ++j){
-                    std::cout <<_board[i][j];
-                }
-                break;
-            }
-            case 4:{
-                for(int j = 0; j < 8; ++j){
-                    std::cout <<_board[i][j];
-                }
-                break;
-            }
-            case 5:{
-                for(int j = 0; j < 8; ++j){
-                    std::cout <<_board[i][j];
-                }
-                break;
-            }
-            case 6:{
-                for(int j = 0; j < 8; ++j){
-                    std::cout <<_board[i][j];
-                }
-                break;
-            }
-            case 7:{
-                for(int j = 0; j < 8; ++j){
-                    std::cout <<_board[i][j];
-                }
-                break;
-            }
-            default:
-                break;
+        for(int j = 0; j < 8; ++j){
+            std::cout <<_board[i][j];
         }
     }
     std::cout << std::endl << std::endl;
@@ -222,77 +173,6 @@ std::vector<int*> Tour::possibles() {
     }
     return pos_coord;
 }
-void Tour::possibles_stack() {
-    //pointer to each result put into vector to be returned
-    //when making pointer, THAT is when the coordinates get connected to board
-
-    //don't forget to check to make sure there are no null pointers
-    //(pointers to positions that are not on board)
-
-    // Creates vector of int pointers to coordinates
-
-    // Shouldn't this be in a stack?
-    int* temp = NULL;
-
-
-    // First CCW movement
-    if(on_board(_x - 2, _y - 1)){
-        temp = &_board[_x - 2][_y - 1];
-        (*temp) = 0;
-        _position = temp;
-        stack_path.push(temp);
-    }
-    // 2nd CCW movement
-    else if(on_board(_x - 1, _y - 2)){
-        temp = &_board[_x - 1][_y - 2];
-        (*temp) = 0;
-        _position = temp;
-        stack_path.push(temp);
-    }
-    // 3rd CCW movement
-    else if(on_board(_x + 1, _y - 2)){
-        temp = &_board[_x + 1][_y - 2];
-        (*temp) = 0;
-        _position = temp;
-        stack_path.push(temp);
-    }
-    // 4th CCW movement
-    else if(on_board(_x + 2, _y - 1)){
-        temp = &_board[_x + 2][_y - 1];
-        (*temp) = 0;
-        _position = temp;
-        stack_path.push(temp);
-    }
-    // 5th CCW movement
-    else if(on_board(_x + 2, _y + 1)){
-        temp = &_board[_x + 2][_y + 1];
-        (*temp) = 0;
-        _position = temp;
-        stack_path.push(temp);
-    }
-    // 6th CCW movement
-    else if(on_board(_x + 1, _y + 2)){
-        temp = &_board[_x + 1][_y + 2];
-        (*temp) = 0;
-        _position = temp;
-        stack_path.push(temp);
-    }
-    // 7th CCW movement
-    else if(on_board(_x - 1, _y + 2)){
-        temp = &_board[_x - 1][_y + 2];
-        (*temp) = 0;
-        _position = temp;
-        stack_path.push(temp);
-    }
-    // 8th CCW movement
-    else if(on_board(_x - 2, _y + 1)){
-        temp = &_board[_x - 2][_y + 1];
-        (*temp) = 0;
-        _position = temp;
-        stack_path.push(temp);
-    }
-//    return stack_path;
-}
 
 // Returns current x position
 int Tour::getXPosition() {
@@ -356,23 +236,6 @@ bool Tour::check_for_solutions(){
     // Return false otherwise
     return false;
 }
-
-
-int* Tour::searchStack() {
-    // If not solved, pop last inserted element and try next one
-    if (!solved) {
-        stack_path.pop();
-        possibles_stack();
-    }
-    else {
-        // Creates an integer pointer to the position on the board
-        int* temp = _position;
-        // Returns that position
-        return temp;
-    }
-
-}
-
 
 
 void Tour::q_enqueue(int *input) {

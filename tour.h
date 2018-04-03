@@ -18,10 +18,7 @@ public:
     Tour&operator=(const Tour &other);
 
     std::vector<int*> possibles();
-    void possibles_stack();
     int* search(std::vector<int*> poses);
-    int* searchStack();
-    int *search();
 
     void q_enqueue(int* input);
     bool check_for_solutions();

@@ -3,4 +3,4 @@ project(test_knight)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(test_knight main.cpp tour.cpp tour.h queue.h)
+add_executable(test_knight main.cpp tour.cpp tour.h queue.h linkedlistbaseclass.h linkedlistbaseclass.cpp linkedlist.h)
