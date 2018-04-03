@@ -38,13 +38,13 @@ public:
 private:
     // 2D array of type int
     int** _board;
-    bool solved;
-    int number_of_solutions;
+    bool _solved;
+    int _number_of_solutions;
     myqueue::myQueue<int*> _queue_path;
     myStack<int*> _stack_path;
     int _x, _y;
     int* _position;
-    int* start_position;
+    int* _start_position;
 
     void copy(const Tour &other);
     void nukem();
