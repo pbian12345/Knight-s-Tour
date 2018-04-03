@@ -78,8 +78,8 @@ Tour::Tour(int x, int y) {
     start_position = &_board[x][y];
     *_position = 0;
     int* temp = _position;
-//    _path.enqueue(temp);
-    stack_path.push(temp);
+//    _queue_path.enqueue(temp);
+    _stack_path.push(temp);
 }
 
 void Tour::printBoard(){
@@ -239,18 +239,18 @@ bool Tour::check_for_solutions(){
 
 
 void Tour::q_enqueue(int *input) {
-    _path.enqueue(input);
+    _queue_path.enqueue(input);
 }
 int* Tour::q_dequeue() {
-    return _path.dequeue();
+    return _queue_path.dequeue();
 }
 
 void Tour::stack_push(int* pos){
-        stack_path.push(pos);
+        _stack_path.push(pos);
 }
 
 myqueue::myQueue<int*> Tour::stack_pop(){
-    stack_path.pop();
+    _stack_path.pop();
 }
 
 void Tour::copy(const Tour &other) {
@@ -259,7 +259,7 @@ void Tour::copy(const Tour &other) {
             _board[i][j] = other._board[i][j];
         }
     }
-    _path = other._path;
+    _queue_path = other._queue_path;
     _x = other._x;
     _y = other._y;
     _position = other._position;
@@ -268,7 +268,7 @@ void Tour::copy(const Tour &other) {
 void Tour::nukem() {
     delete[] _board;
     delete _position;
-    _path.clear();
+    _queue_path.clear();
 }
 // Updates new position on board
 void Tour::update_pos() {

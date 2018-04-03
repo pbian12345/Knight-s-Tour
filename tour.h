@@ -6,7 +6,7 @@
 #define TEST_KNIGHT_TOUR_H
 
 #include "queue.h"
-#include "linkedlist.h"
+#include "myStack.h"
 #include <vector>
 #include <string>
 
@@ -40,8 +40,8 @@ private:
     int** _board;
     bool solved;
     int number_of_solutions;
-    myqueue::myQueue<int*> _path;
-    linkStack<int*> stack_path;
+    myqueue::myQueue<int*> _queue_path;
+    myStack<int*> _stack_path;
     int _x, _y;
     int* _position;
     int* start_position;
