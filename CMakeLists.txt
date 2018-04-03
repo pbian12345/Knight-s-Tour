@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
-project(test_knight)
+project(CS8_priority_queue)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(test_knight main.cpp tour.cpp tour.h queue.h)
+add_executable(CS8_priority_queue main.cpp priorityqueue.h queuebase.cpp queuebase.h test_fcns.cpp test_fcns.h)
