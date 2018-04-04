@@ -249,7 +249,6 @@ void Tour::copy(const Tour &other) {
 
 void Tour::nukem() {
     delete[] _board;
-    delete _position;
     _queue_path.clear();
     _stack_path.clear();
 }

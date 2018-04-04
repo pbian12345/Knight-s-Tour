@@ -16,12 +16,11 @@ int main() {
         // First it calls the possibles function and generates all given possibilities from that point
         // Stores possibilities into a vector of int pointers
         // Returns vector to the search function
-//        test1.possibles_stack();
-//        test1.stack_push(test1.searchStack());
-//        test1.q_enqueue(test1.search(test1.possibles()));
+        test1.q_enqueue(test1.search(test1.possibles()));
     }
 
     test1.printBoard();
+    cout << "Success? " << test1.check_if_solved();
 
 //        test1.stack_push();
 //    for(int i = 0; i < 63; ++i){
