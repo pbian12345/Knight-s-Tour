@@ -19,7 +19,7 @@ public:
 
     void possibles();
     void possibles_bt();
-    bool search();
+    void search();
 
     void Enqueue(int *input);
     int* Dequeue();
@@ -28,20 +28,19 @@ public:
     int getYPosition();
 
     void printBoard();
-    bool check_for_solutions();
-    bool check_if_solved();
+    bool is_closed();
+    bool is_solved();
 
     void q_print();
 private:
     // 2D array of type int
     int** _board;
-    bool _solved;
-    int _number_of_solutions;
     myStack<int*> _path;
 //    queue<int*> _path;
 
 //backtracking storage
     int*** _back_track;//capacity of 63
+    int* _restore_val;
     int _spaces_moved;//be careful w/ this variable: it keeps track of current location in _back_track[]
 
     int _x, _y;

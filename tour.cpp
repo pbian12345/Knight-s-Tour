@@ -75,18 +75,21 @@ Tour::Tour(int x, int y) {
     _y = y;
     _position = &_board[x][y];
     // Keeps start position
-    _start_position = &_board[x][y];
+    _start_position = _position;
     *_position = 0;
     int* temp = _position;
-    _path.enqueue(temp);
     _path.enqueue(temp);
     //backtracking
     _spaces_moved = 0;
     for(int i = 0; i < 62; ++i){
         _back_track[i] = new int*[8];
+        _restore_val[i] = 0;
         for(int j = 0; j < 7; ++j){
             _back_track[i][j] = NULL;
         }
+    }
+    for(int i = 0; i < 65; ++i){
+        _restore_val[i] = 0;
     }
 }
 
@@ -183,7 +186,7 @@ void Tour::possibles_bt() {
     }
 }
 
-bool Tour::search() {
+void Tour::search() {
     //decide which possible move will be used (pushed into stack or queue or whatever)
 
     //now check for smallest as in Warnsdorff's rule
@@ -202,32 +205,50 @@ bool Tour::search() {
             }
         }
     }
-    if(!is_null){
-        // Updates position of x & y coordinates if they match a valid position on the board
-        update_pos();
-        // Deferences pointer to space on board in order to set value = 0
-        //cuz we've been there now
-        *_position = 0;
-        // Creates an integer pointer to the position on the board
-        //returns that position ptr
-        Enqueue(_position);
-        return true;
-    }
-    else{
-        int* temp = _position;
-        _position = Dequeue();
-        update_pos();
-        possibles_bt();
-        --_spaces_moved;
-        for(int i = 0; i < 7; ++i){
-            if(_back_track[_spaces_moved][i] == temp){
-                _back_track[_spaces_moved][i] = NULL;
+    switch (is_null){
+        case 0:{
+            // Updates position of x & y coordinates if they match a valid position on the board
+            update_pos();
+            //updates _restore_values
+            _restore_val[_spaces_moved] = *_position;
+            // Deferences pointer to space on board in order to set value = 0
+            //cuz we've been there now
+            *_position = 0;
+            // Creates an integer pointer to the position on the board
+            //returns that position ptr
+            Enqueue(_position);
+            if(is_solved()){
+                if(is_closed()){
+                    cout << "Successful closed tour" << endl;
+                    exit(0);
+                }
+                else{
+                    is_null = true;
+                }
+            }
+            else{
+                break;
             }
         }
-        return false;
+        case 1:{
+            int* temp = _position;
+            *_position = _restore_val[_spaces_moved];
+            _position = Dequeue();
+            update_pos();
+            possibles_bt();
+            --_spaces_moved;
+            for(int i = 0; i < 7; ++i){
+                if(_back_track[_spaces_moved][i] == temp){
+                    _back_track[_spaces_moved][i] = NULL;
+                }
+            }
+            break;
+        }
+        default:
+            break;
     }
 }
-bool Tour::check_if_solved(){
+bool Tour::is_solved(){
     // Loops through board and if there a value that does not equal zero, it is not _solved
     for(int i = 0; i < 8; ++i) {
         for (int j = 0; j < 8; j++){
@@ -242,21 +263,25 @@ bool Tour::check_if_solved(){
 }
 
 
-bool Tour::check_for_solutions(){
-
-   // If the current path has found a Knight's tour and the number of solutions is less than three,
-    // return true
-   if (_solved && (_number_of_solutions < 3)){
-       return true;
-   }
-    // Return false otherwise
-    return false;
+bool Tour::is_closed(){
+    if(is_solved()){
+        possibles();
+        for(int i = 0; i < 7; ++i){
+            if(_back_track[_spaces_moved][i] == _start_position){
+                return true;
+            }
+        }
+    }
+    else{
+        return false;
+    }
 }
 
 
 void Tour::Enqueue(int *input) {
     _path.enqueue(input);
     ++_spaces_moved;
+    cout << "enqueued" << endl;
 }
 int* Tour::Dequeue() {
     return _path.dequeue();
