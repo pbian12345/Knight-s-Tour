@@ -21,9 +21,6 @@ public:
     int* search(std::vector<int*> poses);
 
     void q_enqueue(int* input);
-    bool check_for_solutions();
-    bool check_if_solved();
-
     void stack_push(int* pos);
 
     myqueue::myQueue<int*> stack_pop();
@@ -33,6 +30,8 @@ public:
     int getYPosition();
 
     void printBoard();
+    bool check_for_solutions();
+    bool check_if_solved();
 
     void q_print();
 private:
