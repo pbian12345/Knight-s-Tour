@@ -5,7 +5,7 @@
 #ifndef TEST_KNIGHT_TOUR_H
 #define TEST_KNIGHT_TOUR_H
 
-#include "queue.h"
+#include "priorityqueue.h"
 #include "myStack.h"
 #include <vector>
 #include <string>
@@ -17,14 +17,12 @@ public:
     Tour(const Tour &other);
     Tour&operator=(const Tour &other);
 
-    std::vector<int*> possibles();
-    int* search(std::vector<int*> poses);
+    void possibles();
+    void possibles_bt();
+    bool search();
 
-    void q_enqueue(int* input);
-    void stack_push(int* pos);
-
-    myqueue::myQueue<int*> stack_pop();
-    int* q_dequeue();
+    void Enqueue(int *input);
+    int* Dequeue();
 
     int getXPosition();
     int getYPosition();
@@ -39,8 +37,13 @@ private:
     int** _board;
     bool _solved;
     int _number_of_solutions;
-    myqueue::myQueue<int*> _queue_path;
-    myStack<int*> _stack_path;
+    myStack<int*> _path;
+//    queue<int*> _path;
+
+//backtracking storage
+    int*** _back_track;//capacity of 63
+    int _spaces_moved;//be careful w/ this variable: it keeps track of current location in _back_track[]
+
     int _x, _y;
     int* _position;
     int* _start_position;

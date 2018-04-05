@@ -78,8 +78,16 @@ Tour::Tour(int x, int y) {
     _start_position = &_board[x][y];
     *_position = 0;
     int* temp = _position;
-    _queue_path.enqueue(temp);
-    _stack_path.push(temp);
+    _path.enqueue(temp);
+    _path.enqueue(temp);
+    //backtracking
+    _spaces_moved = 0;
+    for(int i = 0; i < 62; ++i){
+        _back_track[i] = new int*[8];
+        for(int j = 0; j < 7; ++j){
+            _back_track[i][j] = NULL;
+        }
+    }
 }
 
 Tour::~Tour() {
@@ -104,92 +112,120 @@ int Tour::getYPosition(){
     int temp = _y;
     return temp;
 }
-std::vector<int*> Tour::possibles() {
-        //pointer to each result put into vector to be returned
+void Tour::possibles() {
+        //pointer to each result put into _back_track array
         //when making pointer, THAT is when the coordinates get connected to board
-    // Creates vector of int pointers to coordinates
+    // updates _back_track array
 
     //check for nulls and if spot has been visited done in on_board()
 
-    std::vector<int*> pos_coord;
     int* temp = NULL;
 
     // First CounterClockWise(CCW) movement
     if(on_board(_x - 2, _y - 1)){
         temp = &_board[_x - 2][_y - 1];
         --(*temp);
-        pos_coord.push_back(temp);
+        _back_track[_spaces_moved][0] = temp;
     }
     // 2nd CCW movement
     if(on_board(_x - 1, _y - 2)){
         temp = &_board[_x - 1][_y - 2];
         --(*temp);
-        pos_coord.push_back(temp);
+        _back_track[_spaces_moved][1] = temp;
     }
     // 3rd CCW movement
     if(on_board(_x + 1, _y - 2)){
         temp = &_board[_x + 1][_y - 2];
         --(*temp);
-        pos_coord.push_back(temp);
+        _back_track[_spaces_moved][2] = temp;
     }
     // 4th CCW movement
     if(on_board(_x + 2, _y - 1)){
         temp = &_board[_x + 2][_y - 1];
          --(*temp);
-
-        pos_coord.push_back(temp);
+        _back_track[_spaces_moved][3] = temp;
     }
     // 5th CCW movement
     if(on_board(_x + 2, _y + 1)){
         temp = &_board[_x + 2][_y + 1];
          --(*temp);
-        pos_coord.push_back(temp);
+        _back_track[_spaces_moved][4] = temp;
     }
     // 6th CCW movement
     if(on_board(_x + 1, _y + 2)){
         temp = &_board[_x + 1][_y + 2];
          --(*temp);
-        pos_coord.push_back(temp);
+        _back_track[_spaces_moved][5] = temp;
     }
     // 7th CCW movement
     if(on_board(_x - 1, _y + 2)){
         temp = &_board[_x - 1][_y + 2];
          --(*temp);
-        pos_coord.push_back(temp);
+        _back_track[_spaces_moved][6] = temp;
     }
     // 8th CCW movement
     if(on_board(_x - 2, _y + 1)){
         temp = &_board[_x - 2][_y + 1];
          --(*temp);
-        pos_coord.push_back(temp);
+        _back_track[_spaces_moved][7] = temp;
     }
-    return pos_coord;
+}
+void Tour::possibles_bt() {
+    //iterate through most recent (based on _spaces_moved)
+        //if location isn't NULL, increment (to offset the decrement in possibles())
+        //then set it to NULL
+        //by end, all elements in most recent should be reset to NULL
+    for(int i = 0; i < 7; ++i){
+        if(_back_track[_spaces_moved][i]){
+            ++(*(_back_track[_spaces_moved][i]));
+            _back_track[_spaces_moved][i] = NULL;
+        }
+    }
 }
 
-int* Tour::search(std::vector<int*> poses) {
+bool Tour::search() {
     //decide which possible move will be used (pushed into stack or queue or whatever)
 
     //now check for smallest as in Warnsdorff's rule
-     //as tie-breaker, counter-clockwise
+    //as tie-breaker, counter-clockwise
             //order implemented in possibles()
+    //if not all possibilities are NULL, will enqueue
+        //else if all are NULL, will backtrack
     int count = 8;
-    std::vector<int*>::iterator it = poses.begin();
-    while(it != poses.end()){
-        if(*(*it) <= count){
-            count = **it;
-            _position = *it;
+    bool is_null = true;
+    for(int i = 0; i < 7; ++i){
+        if(_back_track[_spaces_moved][i]){
+            if(*(_back_track[_spaces_moved][i]) <= count){
+                count = *(_back_track[_spaces_moved][i]);
+                _position = _back_track[_spaces_moved][i];
+                is_null = false;
+            }
         }
-        ++it;
     }
-    // Updates position of x & y coordinates if they match a valid position on the board
-    update_pos();
-    // Deferences pointer to space on board in order to set value = 0
+    if(!is_null){
+        // Updates position of x & y coordinates if they match a valid position on the board
+        update_pos();
+        // Deferences pointer to space on board in order to set value = 0
         //cuz we've been there now
-    *_position = 0;
-    // Creates an integer pointer to the position on the board
+        *_position = 0;
+        // Creates an integer pointer to the position on the board
         //returns that position ptr
-    int* temp = _position;
-    return temp;
+        Enqueue(_position);
+        return true;
+    }
+    else{
+        int* temp = _position;
+        _position = Dequeue();
+        update_pos();
+        possibles_bt();
+        --_spaces_moved;
+        for(int i = 0; i < 7; ++i){
+            if(_back_track[_spaces_moved][i] == temp){
+                _back_track[_spaces_moved][i] = NULL;
+            }
+        }
+        return false;
+    }
 }
 bool Tour::check_if_solved(){
     // Loops through board and if there a value that does not equal zero, it is not _solved
@@ -218,19 +254,12 @@ bool Tour::check_for_solutions(){
 }
 
 
-void Tour::q_enqueue(int *input) {
-    _queue_path.enqueue(input);
+void Tour::Enqueue(int *input) {
+    _path.enqueue(input);
+    ++_spaces_moved;
 }
-int* Tour::q_dequeue() {
-    return _queue_path.dequeue();
-}
-
-void Tour::stack_push(int* pos){
-        _stack_path.push(pos);
-}
-
-myqueue::myQueue<int*> Tour::stack_pop(){
-    _stack_path.pop();
+int* Tour::Dequeue() {
+    return _path.dequeue();
 }
 
 void Tour::copy(const Tour &other) {
@@ -239,8 +268,8 @@ void Tour::copy(const Tour &other) {
             _board[i][j] = other._board[i][j];
         }
     }
-    _queue_path = other._queue_path;
-    _stack_path = other._stack_path;
+    _path = other._path;
+    _path = other._path;
     _x = other._x;
     _y = other._y;
     _position = other._position;
@@ -249,8 +278,8 @@ void Tour::copy(const Tour &other) {
 
 void Tour::nukem() {
     delete[] _board;
-    _queue_path.clear();
-    _stack_path.clear();
+    _path.clear();
+    _path.clear();
 }
 // Updates new position on board
 void Tour::update_pos() {
@@ -296,7 +325,7 @@ void Tour::q_print() {
     // Print function in Algebraic Notation
 
     // Int pointer or array takes in the head of the queue
-    int* temp = q_dequeue();
+    int* temp = Dequeue();
     for(int a = 0; a < 8; ++a){
         for(int b = 0; b < 8; ++b){
             // If the int pointer is equal to the position of the board

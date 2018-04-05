@@ -15,11 +15,11 @@ template<typename Data, typename Priority = int>
 class queue : public queueBase
 {
 public:
-    queue( size_t c = 10, QUEUE_TYPE q = Q_PRIORITY);
+    queue( size_t c = 64, QUEUE_TYPE q = Q_PRIORITY);
     ~queue();
     queue(const queue<Data,Priority> &other);
     queue<Data,Priority>& operator=(const queue<Data,Priority> &other);
-    void enqueue(const Data &d, const Priority &p);
+    void enqueue(const Data &d, const Priority &p = mySize);
     queue<Data,Priority>& operator>>(Data &d);
     queue<Data,Priority>& operator<<(const Data &d);
     Data dequeue();

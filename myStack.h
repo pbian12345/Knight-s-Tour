@@ -23,8 +23,8 @@ public:
     bool full();
     void clear();
     T peek();
-    T pop();
-    void push(const T &data);
+    T dequeue();
+    void enqueue(const T &data);
 
 private:
     size_t _mySize, _myCapacity;
@@ -81,14 +81,14 @@ T myStack<T>::peek() {
     return (_stack.Begin())->_item;
 }
 template<typename T>
-T myStack<T>::pop() {
+T myStack<T>::dequeue() {
     T target = (_stack.Begin())->_item;
     _stack.Delete(_stack.Begin());
     _mySize -= 1;
     return target;
 }
 template<typename T>
-void myStack<T>::push(const T &data) {
+void myStack<T>::enqueue(const T &data) {
     _stack.insertHead(data);
     _mySize += 1;
 }
