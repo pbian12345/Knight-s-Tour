@@ -14,8 +14,7 @@ template<typename T>
 class myStack
 {
 public:
-    myStack();
-    myStack(size_t cap);
+    explicit myStack(size_t cap = 65);
     ~myStack();
     myStack(const myStack &x);
     myStack& operator=(const myStack &x);
@@ -35,11 +34,6 @@ private:
     void copy(const myStack &x);
 };
 
-template<typename T>
-myStack<T>::myStack() {
-    _mySize = 0;
-    _myCapacity = 0;
-}
 template<typename T>
 myStack<T>::myStack(size_t cap) {
     _mySize = 0;

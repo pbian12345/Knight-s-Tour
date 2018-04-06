@@ -19,7 +19,7 @@ public:
     ~queue();
     queue(const queue<Data,Priority> &other);
     queue<Data,Priority>& operator=(const queue<Data,Priority> &other);
-    void enqueue(const Data &d, const Priority &p = mySize);
+    void enqueue(const Data &d, const Priority &p = size());
     queue<Data,Priority>& operator>>(Data &d);
     queue<Data,Priority>& operator<<(const Data &d);
     Data dequeue();
@@ -31,10 +31,10 @@ public:
 private:
     void copy(const queue<Data,Priority> &other);
     void nukem();
-    bool isGreaterOrEqual(node *x, node *y) override; // Overriding a virtual function from the base class
-    bool isLess(node *x, node *y) override;
-    bool isGreater(node *x, node *y) override;
-    bool isLessOrEqual(node *x, node *y) override;
+    bool isGreaterOrEqual(q_node *x, q_node *y) override; // Overriding a virtual function from the base class
+    bool isLess(q_node *x, q_node *y) override;
+    bool isGreater(q_node *x, q_node *y) override;
+    bool isLessOrEqual(q_node *x, q_node *y) override;
 
 };
 
@@ -75,7 +75,7 @@ template<typename Data, typename Priority >
 void queue<Data,Priority>::enqueue(const Data &d, const Priority &p)
 {
 
-    node *newNode = new node;
+    q_node *newNode = new q_node;
     newNode->data = new Data(d);
     newNode->priority = new Priority(p);
     queueBase::enqueue(newNode);
@@ -85,7 +85,7 @@ template<typename Data, typename Priority >
 Data queue<Data,Priority>::dequeue()
 {
     Data data;
-    node* bye;
+    q_node* bye;
 
     try
     {
@@ -128,7 +128,7 @@ template<typename Data, typename Priority >
 Data queue<Data,Priority>::peek()
 {
     Data data;
-    node* bye;
+    q_node* bye;
     try
     {
         data = *(Data*)queueBase::peek()->data, bye = head;
@@ -160,17 +160,17 @@ void queue<Data,Priority>::copy(const queue<Data,Priority> &other)
         return;
     mySize = other.mySize;
     myCapacity = other.myCapacity;
-    head = new node(new Data(*(Data*)other.head->data),
+    head = new q_node(new Data(*(Data*)other.head->data),
                     new Priority(*(Priority*)other.head->priority));
-    tail = new node(new Data(*(Data*)other.tail->data),
+    tail = new q_node(new Data(*(Data*)other.tail->data),
                     new Priority(*(Priority*)other.tail->priority));
-    node *ptr2 = head;
-    for(node *ptr = other.head->prev;
+    q_node *ptr2 = head;
+    for(q_node *ptr = other.head->prev;
         ptr != tail;
         ptr = ptr->prev,
                 ptr2 = ptr2->prev)
     {
-        ptr2->prev = new node(new Data(*(Data*)ptr->data),
+        ptr2->prev = new q_node(new Data(*(Data*)ptr->data),
                               new Priority(*(Priority*)ptr->priority));
         ptr2->prev->next = ptr2;
     }
@@ -187,10 +187,10 @@ void queue<Data,Priority>::clear()
 template<typename Data, typename Priority >
 void queue<Data,Priority>::nukem()
 {
-    node *ptr = head;
+    q_node *ptr = head;
 
     while (ptr != 0){
-        node *bye = ptr;
+        q_node *bye = ptr;
         ptr = ptr->next;
         delete bye;
         bye = NULL;
@@ -201,25 +201,25 @@ void queue<Data,Priority>::nukem()
 }
 
 template<typename Data, typename Priority >
-bool queue<Data,Priority>::isGreaterOrEqual(node *x, node *y)
+bool queue<Data,Priority>::isGreaterOrEqual(q_node *x, q_node *y)
 {
     return *(Priority*)x->priority >= *(Priority*)y->priority;
 }
 
 template<typename Data, typename Priority >
-bool queue<Data,Priority>::isLess(node *x, node *y)
+bool queue<Data,Priority>::isLess(q_node *x, q_node *y)
 {
     return *(Priority*)x->priority < *(Priority*)y->priority;
 }
 
 template<typename Data, typename Priority >
-bool queue<Data,Priority>::isGreater(node *x, node *y)
+bool queue<Data,Priority>::isGreater(q_node *x, q_node *y)
 {
     return *(Priority*)x->priority > *(Priority*)y->priority;
 }
 
 template<typename Data, typename Priority >
-bool queue<Data,Priority>::isLessOrEqual(node *x, node *y)
+bool queue<Data,Priority>::isLessOrEqual(q_node *x, q_node *y)
 {
     return *((Priority*)x->priority) <= *((Priority*)y->priority);
 }

@@ -47,9 +47,9 @@ bool queueBase::full()
 
 //virtual bool compare(node *x, node *y) = 0;
 
-void queueBase::enqueue(node *who)
+void queueBase::enqueue(q_node *who)
 {
-    node *ptr = tail;
+    q_node *ptr = tail;
     switch(queueType)
     {
         case Q_PRIORITY :
@@ -100,29 +100,29 @@ void queueBase::enqueue(node *who)
     ++mySize;
 }
 
-void queueBase::addToFront(node* who) {
+void queueBase::addToFront(q_node* who) {
     head->next = who;
     who->prev = head;
     head = head->next;
 }
 
-void queueBase::addToEnd(node *who)
+void queueBase::addToEnd(q_node *who)
 {
     if(empty()){
         head = tail = who;
     }
     else
     {
-        tail->next = new node(who->data,who->priority);
+        tail->next = new q_node(who->data,who->priority);
         tail = tail->next;
     }
 }
 
 
 
-node* queueBase::dequeue()
+q_node* queueBase::dequeue()
 {
-    node *item = head;
+    q_node *item = head;
     switch(queueType)
     {
         case Q_PRIORITY : head = head->next;
@@ -141,7 +141,7 @@ node* queueBase::dequeue()
     return item;
 }
 
-node* queueBase::peek()
+q_node* queueBase::peek()
 {
     return head;
 }

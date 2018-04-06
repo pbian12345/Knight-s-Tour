@@ -19,7 +19,7 @@ public:
 
     void possibles();
     void possibles_bt();
-    void search();
+    bool search();
 
     void Enqueue(int *input);
     int* Dequeue();
@@ -30,8 +30,10 @@ public:
     void printBoard();
     bool is_closed();
     bool is_solved();
+    bool run_check(bool is_null);
 
     void q_print();
+    void normal_print();
 private:
     // 2D array of type int
     int** _board;
@@ -50,6 +52,7 @@ private:
     void copy(const Tour &other);
     void nukem();
     void update_pos();
+    void print_location(int*);
     bool on_board(int x, int y);
 };
 
