@@ -1,32 +1,27 @@
 #include <iostream>
-#include "tour.h"
+#include "PQArray.h"
+
 using namespace std;
 
-void user_input(string &input);
-
-
 int main() {
+    PQArray<char, int> ji(65);
 
-    // Calls constructor of test1 class. Sets origin point as (4, 4).
-    // Initializes board.
-    Tour test1(4, 4);
-    test1.printBoard();
-
-    bool is_done = false;
-    while (!is_done){
-        test1.possibles();
-        is_done = test1.run_check(test1.search());
+    cout<<"I'm enqueuing"<<endl;
+    for(size_t i = 'A'; i <= 'Z'; ++i){
+        cout << 'Z' - i << endl;
+        ji.enqueue(i,'Z' - i);
     }
-    cout << "Successful closed tour!" << endl;
-    test1.printBoard();
-    cout << endl << "======================Printing path========================" << endl;
-    test1.normal_print();
+    ji.clear();
+    cout << "I'm enqueuing again!" << endl;
+    for(size_t i = 'A'; i <= 'Z'; ++i){
+        ji.enqueue(i,'Z' - i);
+    }
 
-
-//    test1.printBoard();
-//    cout << "Success? " << test1.is_solved();
-
+    while(!ji.empty())
+    {
+        char d = ji.dequeue();
+        cout<<d<<endl;
+    }
+    cout<<"I'm exiting"<<endl;
     return 0;
 }
-
-//Widget needs array of coordinates
