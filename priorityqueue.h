@@ -5,87 +5,233 @@
 #ifndef CS8_LAB_PRIORITY_QUEUE_PRIORITYQUEUE_H
 #define CS8_LAB_PRIORITY_QUEUE_PRIORITYQUEUE_H
 
-#include "queuebase.h"
-//#include <QDebug>
 #include <iostream>
 #include <cstdlib>
 
-// Queue class that inherits from a base class
-template<typename Data, typename Priority = int>
-class queue : public queueBase
+enum QUEUE_ERRORS{PQ_BADSIZE, PQ_EMPTY, PQ_FULL, PQ_BADPRIORITY};
+
+using namespace std;
+
+struct PQ_node
 {
-public:
-    queue( size_t c = 64, QUEUE_TYPE q = Q_PRIORITY);
-    ~queue();
-    queue(const queue<Data,Priority> &other);
-    queue<Data,Priority>& operator=(const queue<Data,Priority> &other);
-    void enqueue(const Data &d, const Priority &p = size());
-    queue<Data,Priority>& operator>>(Data &d);
-    queue<Data,Priority>& operator<<(const Data &d);
-    Data dequeue();
-    Data peek();
-    void clear();
+    void *data, *priority;
 
 
-
-private:
-    void copy(const queue<Data,Priority> &other);
-    void nukem();
-    bool isGreaterOrEqual(q_node *x, q_node *y) override; // Overriding a virtual function from the base class
-    bool isLess(q_node *x, q_node *y) override;
-    bool isGreater(q_node *x, q_node *y) override;
-    bool isLessOrEqual(q_node *x, q_node *y) override;
+    PQ_node(){
+        data = nullptr;
+        priority = nullptr;
+    }
+    PQ_node(void *d, void *p){
+        data = d;
+        priority = p;
+    }
 
 };
 
 
+template<typename Data, typename Priority = int>
+class PQArray {
+
+public:
+    PQArray(int capacity = 65);
+    ~PQArray();
+    size_t capacity();
+    bool empty() const;
+    bool full();
+    Data peek();
+    PQArray<Data,Priority>(PQArray<Data,Priority> &other);
+    PQArray<Data,Priority>& operator=(PQArray<Data,Priority> &other);
+    void clear();
+    void copy(PQArray<Data,Priority> &other);
+    void enqueue(Data d, Priority p);
+    PQArray<Data,Priority>& operator>>(Data &d);
+    PQArray<Data,Priority>& operator<<(const Data &d);
+    Data dequeue();
+
+
+
+private:
+    PQ_node prqueue;
+    void addToEnd(PQ_node *who);
+    void addToFront(PQ_node *who);
+    int mySize, head, tail, head_priority, tail_priority, myCapacity;
+    int currentindex;
+    void nukem();
+    bool isGreater(PQ_node *p1,Priority p2);
+    bool isLessOrEqual(PQ_node *p1, Priority p2);
+    PQ_node* array[65];
+
+
+};
+
 template<typename Data, typename Priority>
-queue<Data,Priority>::queue(size_t c, QUEUE_TYPE q)
+PQArray<Data,Priority>::PQArray(int capacity)
 {
-    myCapacity = c;
-    queueType = q;
+
+    if (capacity > 2)
+    {
+        // If capacity entered is greater than 2, allocate space for user-entered array
+        head = tail = -1;
+        mySize = 0;
+        head_priority = tail_priority = 0;
+        myCapacity = capacity;
+        currentindex = -1;
+    }
+    else {
+        // Throw error if user inputted a size smaller than two
+        throw PQ_BADSIZE;
+    }
+
 }
 
-template<typename Data, typename Priority >
-queue<Data,Priority>::~queue()
-{
+// Erases array
+template<typename Data, typename Priority>
+PQArray<Data,Priority>::~PQArray(){
     nukem();
-    mySize = myCapacity = 0;
 }
 
-template<typename Data, typename Priority >
-queue<Data,Priority>::queue(const queue<Data,Priority> &other)
-{
-    copy(other);
+// Return true if array is empty
+template<typename Data, typename Priority>
+bool PQArray<Data,Priority>::empty() const{
+    return !mySize;
 }
 
-template<typename Data, typename Priority >
-queue<Data,Priority>& queue<Data,Priority>::operator=(const queue<Data,Priority> &other)
-{
+// Returns true if array is full
+template<typename Data, typename Priority>
+bool PQArray<Data,Priority>::full(){
+    return mySize == myCapacity;
+}
+
+// Returns capacity of array
+template<typename Data, typename Priority>
+size_t PQArray<Data,Priority>::capacity(){
+    return myCapacity;
+}
+
+template<typename Data, typename Priority>
+void PQArray<Data,Priority>::copy(PQArray<Data,Priority> &other){
+    if(other.empty())
+        return;
+    mySize = other.mySize;
+    myCapacity = other.myCapacity;
+    PQ_node *node;
+    node = other.array[head];
+    tail_priority = *(Priority*)node->priority;
+    head_priority =  *(Priority*)node->priority;
+    head = other.head;
+    tail = other.head;
+
+    for (int i = 0; i < other.mySize; i++){
+        this->array[i] = other.array[i];
+    }
+
+}
+
+template<typename Data, typename Priority>
+PQArray<Data,Priority>& PQArray<Data,Priority>::operator=(PQArray<Data,Priority> &other){
     if(this != &other)
     {
         nukem();
         copy(other);
     }
     return  *this;
+
 }
 
+template<typename Data, typename Priority>
+void PQArray<Data,Priority>::enqueue(Data d, Priority p) {
 
-template<typename Data, typename Priority >
-void queue<Data,Priority>::enqueue(const Data &d, const Priority &p)
-{
-
-    q_node *newNode = new q_node;
+    PQ_node *newNode = new PQ_node;
+    currentindex += 1;
     newNode->data = new Data(d);
     newNode->priority = new Priority(p);
-    queueBase::enqueue(newNode);
+
+    if (empty()) {
+        addToEnd(newNode);
+    }
+    else if (isLessOrEqual(newNode,head_priority)) {
+        addToEnd(newNode);
+    }
+    else if (isGreater(newNode, tail_priority)) {
+        addToFront(newNode);
+    }
+    else {
+        throw PQ_BADPRIORITY;
+    }
+}
+
+
+template<typename Data, typename Priority >
+void PQArray<Data,Priority>::addToEnd(PQ_node *who){
+    // Increase tail index by one
+
+    if (empty()){
+        head += 1;
+        tail += 1;
+        tail_priority = *(Priority*)who->priority;
+        head_priority =  *(Priority*)who->priority;
+        array[tail] = array[head] = who;
+        ++mySize;
+    }
+    else if (!full()){
+        tail += 1;
+        tail_priority = *(Priority*)who->priority;
+        array[tail] = who;
+        ++mySize;
+    }
+    else {
+        throw PQ_FULL;
+    }
 }
 
 template<typename Data, typename Priority >
-Data queue<Data,Priority>::dequeue()
+bool PQArray<Data,Priority>::isGreater(PQ_node *p1, Priority p2)
 {
+    return *(Priority*)p1->priority > p2;
+}
+template<typename Data, typename Priority >
+bool PQArray<Data,Priority>::isLessOrEqual(PQ_node *p1, Priority p2)
+{
+
+    return *(Priority*)p1->priority <= p2;
+}
+template<typename Data, typename Priority>
+void PQArray<Data,Priority>::addToFront(PQ_node *n)
+{
+    // Increase size and therefore index of array
+    if (!full()){
+        head = mySize+1;
+        // Assign priority to head
+        head_priority = *(Priority*)n->priority;
+        // Assign data to new head
+        array[head] = n;
+        ++mySize;
+    }
+    else {
+        throw PQ_BADSIZE;
+    }
+
+}
+
+template<typename Data, typename Priority>
+PQArray<Data,Priority>& PQArray<Data,Priority>::operator>>(Data &d){
+    d = dequeue();
+    return *this;
+
+}
+
+template<typename Data, typename Priority>
+PQArray<Data,Priority>& PQArray<Data,Priority>::operator<<(const Data &d){
+    enqueue(d, 0);
+    return *this;
+}
+
+
+template<typename Data, typename Priority>
+Data PQArray<Data,Priority>::dequeue(){
+
     Data data;
-    q_node* bye;
+    PQ_node* bye;
 
     try
     {
@@ -96,8 +242,15 @@ Data queue<Data,Priority>::dequeue()
         // 1. First asterisk typecasts it
         // 2. Second asterisk dereferences it
 
-        bye = head;
-        data = *(Data*)queueBase::dequeue()->data;
+        bye = array[head];
+
+        array[head] = array[head+1];
+        if (mySize != 1) {
+            array[head] = NULL;
+        }
+        head +=1;
+
+        data = *(Data*)bye->data;
         delete (Data*)bye->data;
         bye->data = NULL;
         delete (Priority*)bye->priority;
@@ -108,11 +261,13 @@ Data queue<Data,Priority>::dequeue()
     {
         switch(e)
         {
-            case Q_EMPTY : std::cout<<"Queue is empty!"<<std::endl;
+            case PQ_EMPTY : std::cout<<"Queue is empty!"<<std::endl;
                 break;
-            case Q_FULL: std::cout<<"Queue is full!" << std::endl;
+            case PQ_FULL: std::cout<<"Queue is full!" << std::endl;
                 break;
-            case Q_BAD_SIZE: std::cout<<"Bad size!" << std::endl;
+            case PQ_BADSIZE: std::cout<<"Bad size!" << std::endl;
+                break;
+            case PQ_BADPRIORITY: std::cout<<"Bad priority!" << std::endl;
                 break;
         }
     }
@@ -121,121 +276,35 @@ Data queue<Data,Priority>::dequeue()
         std::cout<<"Unknown error occurred. Program terminating"<<std::endl;
         exit(1);
     }
+    --mySize;
     return data;
-}
-//Fix
-template<typename Data, typename Priority >
-Data queue<Data,Priority>::peek()
-{
-    Data data;
-    q_node* bye;
-    try
-    {
-        data = *(Data*)queueBase::peek()->data, bye = head;
-    }
-    catch(QUEUE_ERRORS e)
-    {
-        switch(e)
-        {
-            case Q_EMPTY : std::cout<<"Dequeuing failed!"<<std::endl;
-                break;
 
-            case Q_FULL:
-            case Q_BAD_SIZE: break;
-        }
-    }
-    catch(...)
-    {
-        std::cout<<"Unknown error occurred. Program terminating"<<std::endl;
-        exit(1);
-    }
-    return data;
 }
 
-// Fix
-template<typename Data, typename Priority >
-void queue<Data,Priority>::copy(const queue<Data,Priority> &other)
+template<typename Data, typename Priority>
+Data PQArray<Data,Priority>::peek()
 {
-    if(other.empty())
-        return;
-    mySize = other.mySize;
-    myCapacity = other.myCapacity;
-    head = new q_node(new Data(*(Data*)other.head->data),
-                    new Priority(*(Priority*)other.head->priority));
-    tail = new q_node(new Data(*(Data*)other.tail->data),
-                    new Priority(*(Priority*)other.tail->priority));
-    q_node *ptr2 = head;
-    for(q_node *ptr = other.head->prev;
-        ptr != tail;
-        ptr = ptr->prev,
-                ptr2 = ptr2->prev)
-    {
-        ptr2->prev = new q_node(new Data(*(Data*)ptr->data),
-                              new Priority(*(Priority*)ptr->priority));
-        ptr2->prev->next = ptr2;
-    }
-    tail->next = ptr2;
-    ptr2->prev = tail;
+    return array[head];
 }
 
-template<typename Data, typename Priority >
-void queue<Data,Priority>::clear()
-{
+template<typename Data, typename Priority>
+PQArray<Data,Priority>::PQArray(PQArray<Data,Priority> &other){
+    copy(other);
+}
+
+template<typename Data, typename Priority>
+void PQArray<Data,Priority>::clear(){
     nukem();
 }
+template<typename Data, typename Priority>
+void PQArray<Data,Priority>::nukem(){
 
-template<typename Data, typename Priority >
-void queue<Data,Priority>::nukem()
-{
-    q_node *ptr = head;
-
-    while (ptr != 0){
-        q_node *bye = ptr;
-        ptr = ptr->next;
-        delete bye;
-        bye = NULL;
-
+    for (int i = 0; i < mySize; i++){
+        delete[] array[i];
+        array[i] = nullptr;
     }
+    head = tail = -1;
     mySize = myCapacity = 0;
-    head = tail = nullptr;
-}
-
-template<typename Data, typename Priority >
-bool queue<Data,Priority>::isGreaterOrEqual(q_node *x, q_node *y)
-{
-    return *(Priority*)x->priority >= *(Priority*)y->priority;
-}
-
-template<typename Data, typename Priority >
-bool queue<Data,Priority>::isLess(q_node *x, q_node *y)
-{
-    return *(Priority*)x->priority < *(Priority*)y->priority;
-}
-
-template<typename Data, typename Priority >
-bool queue<Data,Priority>::isGreater(q_node *x, q_node *y)
-{
-    return *(Priority*)x->priority > *(Priority*)y->priority;
-}
-
-template<typename Data, typename Priority >
-bool queue<Data,Priority>::isLessOrEqual(q_node *x, q_node *y)
-{
-    return *((Priority*)x->priority) <= *((Priority*)y->priority);
-}
-
-template<typename Data, typename Priority >
-queue<Data,Priority>& queue<Data,Priority>::operator>>(Data &d)
-{
-    d = dequeue();
-    return *this;
-}
-
-template<typename Data, typename Priority >
-queue<Data,Priority>& queue<Data,Priority>::operator<<(const Data &d)
-{
-    enqueue(d, 0);
-    return *this;
 }
 
 #endif //CS8_LAB_PRIORITY_QUEUE_PRIORITYQUEUE_H
