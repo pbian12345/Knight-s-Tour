@@ -215,6 +215,12 @@ bool Tour::run_check(bool is_null) {
     // Search function
     switch (is_null){
         case 0:{
+            //should make it so the last backtrack in a string of backtracks is returned to the stack
+            if(_have_bted){
+                *_position = -99;
+                _restore_val.enqueue(*_position);
+                _path.enqueue(_position);
+            }
             _have_bted = false;
             // Updates position of x & y coordinates if they match a valid position on the board
             update_pos();

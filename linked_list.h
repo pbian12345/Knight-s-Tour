@@ -223,14 +223,14 @@ void List<T>::copy(node<T>* copyThis) {
 }
 
 
-template <typename U>
-ostream& operator <<(ostream& outs, const List<U>& rhs){
-    //overloads output operator
-    node<U>* walker = rhs._head;
-    while (walker != NULL){
-        outs << *walker << " ";
-        walker = walker->_next;
-    }
-    return outs;
-}
+//template <typename U>
+//ostream& operator <<(ostream& outs, const List<U>& rhs){
+//    //overloads output operator
+//    node<U>* walker = rhs._head;
+//    while (walker != NULL){
+//        outs << *walker << " ";
+//        walker = walker->_next;
+//    }
+//    return outs;
+//}
 #endif //CS8_LAB_STACK_LINKED_LIST_H
