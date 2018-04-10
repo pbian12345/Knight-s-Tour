@@ -39,11 +39,11 @@ public:
     bool empty() const;
     bool full();
     Data peek();
-    PQArray<Data,Priority>(PQArray<Data,Priority> &other);
-    PQArray<Data,Priority>& operator=(PQArray<Data,Priority> &other);
+    PQArray<Data,Priority>(const PQArray<Data,Priority> &other);
+    PQArray<Data,Priority>& operator=(const PQArray<Data,Priority> &other);
     void clear();
-    void copy(PQArray<Data,Priority> &other);
-    void enqueue(Data d, Priority p);
+    void copy(const PQArray<Data,Priority> &other);
+    void enqueue(Data d, Priority p = 0);
     PQArray<Data,Priority>& operator>>(Data &d);
     PQArray<Data,Priority>& operator<<(const Data &d);
     Data dequeue();
@@ -109,7 +109,7 @@ size_t PQArray<Data,Priority>::capacity(){
 }
 
 template<typename Data, typename Priority>
-void PQArray<Data,Priority>::copy(PQArray<Data,Priority> &other){
+void PQArray<Data,Priority>::copy(const PQArray<Data,Priority> &other){
     if(other.empty())
         return;
     mySize = other.mySize;
@@ -128,7 +128,7 @@ void PQArray<Data,Priority>::copy(PQArray<Data,Priority> &other){
 }
 
 template<typename Data, typename Priority>
-PQArray<Data,Priority>& PQArray<Data,Priority>::operator=(PQArray<Data,Priority> &other){
+PQArray<Data,Priority>& PQArray<Data,Priority>::operator=(const PQArray<Data,Priority> &other){
     if(this != &other)
     {
         nukem();
@@ -288,7 +288,7 @@ Data PQArray<Data,Priority>::peek()
 }
 
 template<typename Data, typename Priority>
-PQArray<Data,Priority>::PQArray(PQArray<Data,Priority> &other){
+PQArray<Data,Priority>::PQArray(const PQArray<Data,Priority> &other){
     copy(other);
 }
 

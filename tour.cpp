@@ -219,7 +219,9 @@ bool Tour::run_check(bool is_null) {
             if(_have_bted){
                 *_position = -99;
                 _restore_val.enqueue(*_position);
-                _path.enqueue(_position);
+                Enqueue(_position);
+                possibles();
+                search();
             }
             _have_bted = false;
             // Updates position of x & y coordinates if they match a valid position on the board
@@ -234,6 +236,7 @@ bool Tour::run_check(bool is_null) {
             Enqueue(_position);
             if(is_solved()){
                 printBoard();
+                exit(0);
                 if(is_closed()){
                     //successful closed tour
                     return true;
@@ -281,6 +284,7 @@ bool Tour::run_check(bool is_null) {
                 }
                 cout << _back_track[_spaces_moved][i] << endl;
                 if(_back_track[_spaces_moved][i]){
+                    cout << "location: " << "(" << getXPosition() << "," << getYPosition() << ")" << endl;
                     cout << "contents: " << *(_back_track[_spaces_moved][i]) << endl;
                 }
             }
@@ -333,7 +337,6 @@ void Tour::copy(const Tour &other) {
             _board[i][j] = other._board[i][j];
         }
     }
-    _path = other._path;
     _path = other._path;
     _x = other._x;
     _y = other._y;
