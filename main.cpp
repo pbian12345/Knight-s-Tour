@@ -14,7 +14,11 @@ int main() {
 
     bool is_done = false;
     while (!is_done){
-        test1.possibles();
+//        test1.possibles();
+        if(!test1.get_have_bted()){
+            test1.possibles();
+        }
+        // Chain rule function call, isnull is a set of a possibilities on
         is_done = test1.run_check(test1.search());
     }
     cout << "Successful closed tour!" << endl;

@@ -86,13 +86,10 @@ Tour::Tour(int x, int y) {
     for(int i = 0; i < 65; ++i){
         _back_track[i] = new int*[8];
         for(int j = 0; j < 8; ++j){
-            _back_track[i][j] = NULL;
+            _back_track[i][j] = nullptr;
         }
     }
-    _restore_val = new int[65];
-    for(int i = 0; i < 65; ++i){
-        _restore_val[i] = 0;
-    }
+    _have_bted = false;
 }
 
 Tour::~Tour() {
@@ -106,16 +103,6 @@ Tour& Tour::operator=(const Tour &other) {
         nukem();
         copy(other);
     }
-}
-// Returns current x position
-int Tour::getXPosition() {
-    int temp = _x;
-    return temp;
-}
-// Returns current y position
-int Tour::getYPosition(){
-    int temp = _y;
-    return temp;
 }
 void Tour::possibles() {
         //pointer to each result put into _back_track array
@@ -174,6 +161,14 @@ void Tour::possibles() {
          --(*temp);
         _back_track[_spaces_moved][7] = temp;
     }
+
+    cout << "possibilities: " << endl;
+    for(int i = 0; i < 8; ++i){
+        cout << _back_track[_spaces_moved][i] << endl;
+        if(_back_track[_spaces_moved][i]){
+            cout << "contents: " << *(_back_track[_spaces_moved][i]) << endl;
+        }
+    }
 }
 void Tour::possibles_bt() {
     //iterate through most recent (based on _spaces_moved)
@@ -196,27 +191,35 @@ bool Tour::search() {
             //order implemented in possibles()
     //if not all possibilities are NULL, will enqueue
         //else if all are NULL, will backtrack
+
     int count = 8;
     bool is_null = true;
-    for(int i = 0; i < 8; ++i){
-        if(_back_track[_spaces_moved][i]){
-            if(*(_back_track[_spaces_moved][i]) <= count){
-                count = *(_back_track[_spaces_moved][i]);
-                _position = _back_track[_spaces_moved][i];
-                is_null = false;
+    // Searches through backtracking possibilities
+        for(int i = 0; i < 8; ++i){
+            //iterating through possibilities
+            //if given position exists
+            if(_back_track[_spaces_moved][i]){
+                //dereff and run wardarf's algorithm
+                if(*(_back_track[_spaces_moved][i]) <= count){
+                    count = *(_back_track[_spaces_moved][i]);
+                    _position = _back_track[_spaces_moved][i];
+                    is_null = false;
+                }
             }
         }
-    }
     return is_null;
 }
 
 bool Tour::run_check(bool is_null) {
+    bool orig_is_null = is_null;
+    // Search function
     switch (is_null){
         case 0:{
+            _have_bted = false;
             // Updates position of x & y coordinates if they match a valid position on the board
             update_pos();
             //updates _restore_values
-            _restore_val[_spaces_moved] = *_position;
+            _restore_val.enqueue(*_position);
             // Deferences pointer to space on board in order to set value = 0
             //cuz we've been there now
             *_position = -99;
@@ -241,25 +244,41 @@ bool Tour::run_check(bool is_null) {
         case 1:{
             //when going back 1, system doesn't recognize that the previous one shouldn't be gone to again
                 //so in infinite loop between last two spots************************************************
+
+            _have_bted = true;
             cout << "initiating bt from " << _x << "," << _y << endl;
             cout << "spaces moved: " << _spaces_moved << endl;
 
+
             int* temp = _position;
-//            Dequeue();
+            //if dequeue only once per, crash due to _spaces_moved decremented too many times (array[-1])
+            //if dequeue 1 or 2 depending, crash due to _spaces_moved incremented too many times (array[65])
+            if(!orig_is_null){
+                _position = Dequeue();
+                temp = _position;
+                possibles_bt();
+                *_position = _restore_val.dequeue();
+            }
             _position = Dequeue();
-            *_position = _restore_val[_spaces_moved];
+            possibles_bt();
+            *_position = _restore_val.dequeue();
             --_spaces_moved;
-            cout << "restored position value: " << *_position << endl;
             update_pos();
             cout << "current position: " << "(" << getXPosition() << "," << getYPosition() << ")" << endl;
-            possibles_bt();
 
             for(int i = 0; i < 8; ++i){
-                if(_back_track[_spaces_moved][i] == _position){
-                    _back_track[_spaces_moved][i] = NULL;
+                if(_back_track[_spaces_moved][i] == temp){
+                    _back_track[_spaces_moved][i] = nullptr;
+                }
+                else if(_back_track[_spaces_moved][i] == _position){
+                    _back_track[_spaces_moved][i] = nullptr;
+                }
+                cout << _back_track[_spaces_moved][i] << endl;
+                if(_back_track[_spaces_moved][i]){
+                    cout << "contents: " << *(_back_track[_spaces_moved][i]) << endl;
                 }
             }
-            printBoard();
+//            printBoard();
 
             break;
         }
@@ -318,7 +337,6 @@ void Tour::copy(const Tour &other) {
 
 void Tour::nukem() {
     delete[] _board;
-    delete[] _restore_val;
     _path.clear();
 }
 // Updates new position on board

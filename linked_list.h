@@ -19,11 +19,11 @@ struct node {
         _item = item;
         _next = NULL;
     }
-    template <class T>
-    friend ostream& operator <<(ostream& outs, const node<T> &print_me){
-        outs << print_me._item;
-        return outs;
-    }
+//    template <class T>
+//    friend ostream& operator <<(ostream& outs, const node<T> &print_me){
+//        outs << print_me._item;
+//        return outs;
+//    }
 };
 
 
